@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Harian Otomatis + Database</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="flex items-center justify-center gap-3 mb-3">
+                <svg class="w-10 h-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <h1 class="text-4xl font-bold text-gray-800">Laporan Harian Otomatis + Database</h1>
+            </div>
+            <p class="text-gray-600">Buat, simpan, dan kelola laporan aktivitas harian</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Main Form -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-xl p-8 mb-6">
+                    <div class="flex justify-between gap-2 mb-6 flex-wrap">
+                        <div class="flex gap-2">
+                            <button onclick="generateRandom()" class="px-4 py-2 text-sm bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition shadow-md">
+                                🎲 Generate Random
+                            </button>
+                            <button onclick="loadExample()" class="px-4 py-2 text-sm bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition">
+                                📝 Contoh
+                            </button>
+                        </div>
+                        <button onclick="clearForm()" class="px-4 py-2 text-sm bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">
+                            🗑️ Reset
+                        </button>
+                    </div>
+
+                    <!-- Info Dasar -->
+                    <div class="mb-6">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">👤 Informasi Dasar</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">📅 Tanggal</label>
+                                <input type="date" id="reportDate" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">👤 Nama</label>
+                                <input type="text" id="employeeName" placeholder="Nama Anda" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">💼 Posisi</label>
+                                <input type="text" id="position" placeholder="WEB DEVELOPER" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">🏢 Divisi</label>
+                                <input type="text" id="department" placeholder="IT, MARKETING" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aktivitas -->
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-semibold text-gray-800">⏰ Aktivitas</h2>
+                            <button onclick="addActivity()" class="flex items-center gap-2 px-3 py-1.5 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition">
+                                ➕ Tambah
+                            </button>
+                        </div>
+                        <div id="activitiesContainer" class="space-y-2 max-h-80 overflow-y-auto pr-2"></div>
+                    </div>
+
+                    <!-- Catatan -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">📌 Catatan</label>
+                        <textarea id="notes" placeholder="Catatan tambahan..." rows="3" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 resize-none"></textarea>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex gap-2">
+                        <button onclick="saveReport()" class="flex-1 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-lg hover:from-green-700 hover:to-emerald-700 transition shadow-lg">
+                            💾 Simpan ke Database
+                        </button>
+                        <button onclick="generateReport()" class="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-purple-700 transition shadow-lg">
+                            ✨ Generate
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hasil Laporan -->
+                <div id="reportResult" class="bg-white rounded-2xl shadow-xl p-8 hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800">📄 Hasil Laporan</h2>
+                        <div class="flex gap-2">
+                            <button onclick="copyToClipboard()" class="px-3 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
+                                📋 Salin
+                            </button>
+                            <button onclick="downloadReport()" class="px-3 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+                                💾 Download
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border-2 border-gray-200">
+                        <pre id="reportContent" class="text-sm whitespace-pre-wrap font-mono overflow-x-auto"></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Database Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-2xl shadow-xl p-6 sticky top-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800">🗄️ Database Laporan</h2>
+                        <button onclick="clearDatabase()" class="px-3 py-1.5 text-xs bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+                            Hapus Semua
+                        </button>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="flex gap-2">
+                            <input type="text" id="searchInput" placeholder="🔍 Cari laporan..." class="flex-1 px-3 py-2 text-sm border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500" onkeyup="renderReports()">
+                        </div>
+                    </div>
+
+                    <div class="mb-4 p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border-2 border-indigo-200">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-indigo-700" id="totalReports">0</div>
+                            <div class="text-xs text-gray-600">Total Laporan Tersimpan</div>
+                        </div>
+                    </div>
+
+                    <div id="reportsList" class="space-y-2 max-h-96 overflow-y-auto pr-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let activities = [];
+        let reports = [];
+        let currentReportText = '';
+
+        // Data untuk generate random
+        const randomData = {
+            names: ['Budi Santoso', 'Siti Rahma', 'Andi Wijaya', 'Dewi Lestari', 'Rudi Hartono', 'Nina Permata', 'Agus Setiawan', 'Rina Kusuma', 'Joko Susilo', 'Maya Sari'],
+            positions: ['WEB DEVELOPER', 'FRONTEND DEVELOPER', 'BACKEND DEVELOPER', 'UI/UX DESIGNER', 'PROJECT MANAGER', 'QA ENGINEER', 'DEVOPS ENGINEER', 'DATA ANALYST', 'MOBILE DEVELOPER', 'FULL STACK DEVELOPER'],
+            departments: ['TECH', 'IT', 'ENGINEERING', 'DIGITAL', 'PRODUCT', 'INNOVATION', 'DEVELOPMENT'],
+            tasks: [
+                'Briefing dan Doa Bersama All Team',
+                'Meeting dengan klien untuk diskusi requirement',
+                'Develop fitur login dan register',
+                'Bug fixing pada halaman dashboard',
+                'Code review untuk pull request tim',
+                'Update dokumentasi API',
+                'Testing fitur baru di staging server',
+                'Optimize database query untuk performa',
+                'Implementasi responsive design',
+                'Setup CI/CD pipeline',
+                'Refactoring code untuk clean architecture',
+                'Research teknologi baru untuk project',
+                'Design mockup untuk halaman baru',
+                'Sprint planning meeting',
+                'Daily standup meeting',
+                'Deploy ke production server',
+                'Monitoring system performance',
+                'Create unit testing',
+                'Update library dependencies',
+                'Fix security vulnerabilities',
+                'Implement new feature request',
+                'Database migration',
+                'API integration',
+                'Performance optimization',
+                'User acceptance testing',
+                'Istirahat',
+                'Review code dengan senior developer',
+                'Buat laporan progress project',
+                'Setup development environment',
+                'Troubleshooting production issue'
+            ],
+            times: ['08.00 - 09.00', '09.00 - 10.30', '10.30 - 12.00', '13.00 - 15.00', '15.00 - 16.30', '08.30 - 10.00', '10.00 - 11.30', '13.30 - 15.30', '11.30 - 12.30']
+        };
+
+        // Load dari database
+        document.addEventListener('DOMContentLoaded', function() {
+            loadReports();
+            document.getElementById('reportDate').valueAsDate = new Date();
+            addActivity();
+        });
+
+        function loadReports() {
+            const stored = localStorage.getItem('dailyReports');
+            if (stored) {
+                reports = JSON.parse(stored);
+            }
+            renderReports();
+        }
+
+        function saveReports() {
+            localStorage.setItem('dailyReports', JSON.stringify(reports));
+            renderReports();
+        }
+
+        function renderReports() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = reports.filter(r => 
+                r.name.toLowerCase().includes(searchTerm) ||
+                r.position.toLowerCase().includes(searchTerm) ||
+                r.date.includes(searchTerm)
+            );
+
+            document.getElementById('totalReports').textContent = reports.length;
+            
+            const list = document.getElementById('reportsList');
+            if (filtered.length === 0) {
+                list.innerHTML = '<div class="text-center text-gray-400 py-8">Belum ada laporan</div>';
+                return;
+            }
+
+            list.innerHTML = filtered.map((report, index) => `
+                <div class="bg-gradient-to-r from-gray-50 to-blue-50 p-3 rounded-lg border-2 border-gray-200 hover:border-indigo-400 transition cursor-pointer" onclick="loadReport(${reports.indexOf(report)})">
+                    <div class="flex justify-between items-start mb-1">
+                        <div class="flex-1">
+                            <div class="font-semibold text-gray-800 text-sm">${report.name}</div>
+                            <div class="text-xs text-gray-600">${report.position}</div>
+                        </div>
+                        <button onclick="event.stopPropagation(); deleteReport(${reports.indexOf(report)})" class="text-red-500 hover:text-red-700 text-xs">
+                            🗑️
+                        </button>
+                    </div>
+                    <div class="text-xs text-gray-500">📅 ${report.date}</div>
+                    <div class="text-xs text-indigo-600 mt-1">${report.activities.length} aktivitas</div>
+                </div>
+            `).join('');
+        }
+
+        function loadReport(index) {
+            const report = reports[index];
+            document.getElementById('reportDate').value = report.dateRaw;
+            document.getElementById('employeeName').value = report.name;
+            document.getElementById('position').value = report.position;
+            document.getElementById('department').value = report.department;
+            document.getElementById('notes').value = report.notes || '';
+            
+            activities = report.activities.map((act, i) => ({
+                id: Date.now() + i,
+                time: act.time,
+                description: act.description
+            }));
+            
+            renderActivities();
+            generateReport();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteReport(index) {
+            if (confirm('Hapus laporan ini?')) {
+                reports.splice(index, 1);
+                saveReports();
+            }
+        }
+
+        function clearDatabase() {
+            if (confirm('Hapus SEMUA laporan? Tindakan ini tidak bisa dibatalkan!')) {
+                reports = [];
+                localStorage.removeItem('dailyReports');
+                renderReports();
+                alert('✅ Semua laporan telah dihapus');
+            }
+        }
+
+        function generateRandom() {
+            // Random date dalam 30 hari terakhir
+            const randomDate = new Date();
+            randomDate.setDate(randomDate.getDate() - Math.floor(Math.random() * 30));
+            document.getElementById('reportDate').valueAsDate = randomDate;
+            
+            // Random data
+            document.getElementById('employeeName').value = randomData.names[Math.floor(Math.random() * randomData.names.length)];
+            document.getElementById('position').value = randomData.positions[Math.floor(Math.random() * randomData.positions.length)];
+            document.getElementById('department').value = randomData.departments[Math.floor(Math.random() * randomData.departments.length)];
+            
+            // Random aktivitas (5-10 aktivitas)
+            const numActivities = 5 + Math.floor(Math.random() * 6);
+            activities = [];
+            const usedTasks = new Set();
+            
+            for (let i = 0; i < numActivities; i++) {
+                let task;
+                do {
+                    task = randomData.tasks[Math.floor(Math.random() * randomData.tasks.length)];
+                } while (usedTasks.has(task));
+                usedTasks.add(task);
+                
+                const hasTime = Math.random() > 0.3; // 70% chance ada waktu
+                activities.push({
+                    id: Date.now() + i,
+                    time: hasTime ? randomData.times[Math.floor(Math.random() * randomData.times.length)] : '',
+                    description: task
+                });
+            }
+            
+            renderActivities();
+            
+            // Random notes (50% chance)
+            if (Math.random() > 0.5) {
+                document.getElementById('notes').value = 'Semua tugas selesai dengan baik. Tidak ada kendala berarti.';
+            } else {
+                document.getElementById('notes').value = '';
+            }
+            
+            alert('🎲 Data random berhasil di-generate! Klik "Simpan ke Database" untuk menyimpan.');
+        }
+
+        function addActivity() {
+            const id = Date.now();
+            activities.push({ id, time: '', description: '' });
+            renderActivities();
+        }
+
+        function removeActivity(id) {
+            activities = activities.filter(a => a.id !== id);
+            renderActivities();
+        }
+
+        function updateActivity(id, field, value) {
+            const activity = activities.find(a => a.id === id);
+            if (activity) {
+                activity[field] = value;
+            }
+        }
+
+        function renderActivities() {
+            const container = document.getElementById('activitiesContainer');
+            container.innerHTML = activities.map(activity => `
+                <div class="flex gap-2 items-start bg-gray-50 p-2 rounded-lg border border-gray-200">
+                    <input type="text" value="${activity.time}" onchange="updateActivity(${activity.id}, 'time', this.value)" placeholder="08.00 - 10.00" class="w-28 px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500">
+                    <input type="text" value="${activity.description}" onchange="updateActivity(${activity.id}, 'description', this.value)" placeholder="Deskripsi aktivitas..." class="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500">
+                    <button onclick="removeActivity(${activity.id})" class="p-1.5 text-red-600 hover:bg-red-50 rounded transition text-sm">
+                        🗑️
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function saveReport() {
+            const reportDate = document.getElementById('reportDate').value;
+            const employeeName = document.getElementById('employeeName').value;
+            const position = document.getElementById('position').value;
+            const department = document.getElementById('department').value;
+            const notes = document.getElementById('notes').value;
+
+            if (!employeeName || !position) {
+                alert('❌ Mohon isi minimal Nama dan Posisi!');
+                return;
+            }
+
+            const filteredActivities = activities.filter(act => act.description.trim() !== '');
+            if (filteredActivities.length === 0) {
+                alert('❌ Mohon tambahkan minimal 1 aktivitas!');
+                return;
+            }
+
+            const dateObj = new Date(reportDate + 'T00:00:00');
+            const formattedDate = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+
+            const newReport = {
+                id: Date.now(),
+                dateRaw: reportDate,
+                date: formattedDate,
+                name: employeeName,
+                position: position,
+                department: department,
+                activities: filteredActivities,
+                notes: notes,
+                createdAt: new Date().toISOString()
+            };
+
+            reports.unshift(newReport);
+            saveReports();
+            
+            alert('✅ Laporan berhasil disimpan ke database!');
+            generateReport();
+        }
+
+        function generateReport() {
+            const reportDate = document.getElementById('reportDate').value;
+            const employeeName = document.getElementById('employeeName').value;
+            const position = document.getElementById('position').value;
+            const department = document.getElementById('department').value;
+            const notes = document.getElementById('notes').value;
+
+            const dateObj = new Date(reportDate + 'T00:00:00');
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const year = dateObj.getFullYear();
+            const formattedDate = `${day}/${month}/${year}`;
+
+            let report = `TUGAS HARIAN ${formattedDate}\n\n`;
+            
+            if (position) {
+                report += `• ${position.toUpperCase()}*\n\n`;
+            }
+
+            if (department) {
+                report += `${department.toUpperCase()}\n\n`;
+            }
+
+            const filteredActivities = activities.filter(act => act.description.trim() !== '');
+            
+            filteredActivities.forEach((activity) => {
+                if (activity.time) {
+                    report += `• ${activity.time}*\n`;
+                }
+                report += `• ${activity.description}\n`;
+            });
+
+            if (notes) {
+                report += `\n${notes}\n`;
+            }
+
+            report += `\n────────────────────────────────────────────────\n`;
+            report += `Laporan dibuat oleh: ${employeeName || '-'}\n`;
+            report += `Dibuat pada: ${new Date().toLocaleString('id-ID')}\n`;
+
+            currentReportText = report;
+            document.getElementById('reportContent').textContent = report;
+            document.getElementById('reportResult').classList.remove('hidden');
+        }
+
+        function copyToClipboard() {
+            navigator.clipboard.writeText(currentReportText).then(() => {
+                alert('✅ Laporan berhasil disalin!');
+            }).catch(() => {
+                alert('❌ Gagal menyalin laporan');
+            });
+        }
+
+        function downloadReport() {
+            const reportDate = document.getElementById('reportDate').value;
+            const dateStr = reportDate.split('-').reverse().join('');
+            const blob = new Blob([currentReportText], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Laporan_Harian_${dateStr}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function loadExample() {
+            document.getElementById('reportDate').value = '2026-01-02';
+            document.getElementById('employeeName').value = 'John Doe';
+            document.getElementById('position').value = 'WEB DEVELOPER';
+            document.getElementById('department').value = 'YOGA';
+            
+            activities = [
+                { id: 1, time: '08.05 - 08.20', description: 'Briefing dan Doa Bersama All Team' },
+                { id: 2, time: '08.20 - 11.30', description: 'Create Halaman Kategori Mesin Giling Bakso' },
+                { id: 3, time: '', description: 'Create Halaman Kategori Mesin Mixer' },
+                { id: 4, time: '', description: 'Ipdate Halaman Tentang Kami' },
+                { id: 5, time: '11.30 - 12.30', description: 'Istirahat' },
+                { id: 6, time: '12.30 - 16.00', description: 'Perbaiki Tampilan Mobile Web Futake mesin' }
+            ];
+            
+            renderActivities();
+        }
+
+        function clearForm() {
+            document.getElementById('reportDate').valueAsDate = new Date();
+            document.getElementById('employeeName').value = '';
+            document.getElementById('position').value = '';
+            document.getElementById('department').value = '';
+            document.getElementById('notes').value = '';
+            activities = [];
+            addActivity();
+            document.getElementById('reportResult').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
