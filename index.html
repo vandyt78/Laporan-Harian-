@@ -555,7 +555,7 @@ service cloud.firestore {
             const formattedDate = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()}`;
 
             let report = `═══════════════════════════════════════════════\n`;
-            report += `         LAPORAN HARIAN KARYAWAN IT\n`;
+            report += `         LAPORAN HARIAN WEB DEV\n`;
             report += `═══════════════════════════════════════════════\n\n`;
             report += `TANGGAL: ${formattedDate}\n`;
             if (position) report += `POSISI: ${position.toUpperCase()}\n`;
@@ -654,4 +654,5 @@ service cloud.firestore {
     </script>
 </body>
 </html>
+
 
