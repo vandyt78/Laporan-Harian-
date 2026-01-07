@@ -554,44 +554,36 @@ service cloud.firestore {
             const dateObj = new Date(reportDate + 'T00:00:00');
             const formattedDate = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()}`;
 
-            let report = `═══════════════════════════════════════════════\n`;
-            report += `         LAPORAN HARIAN WEB DEV\n`;
-            report += `═══════════════════════════════════════════════\n\n`;
-            report += `TANGGAL: ${formattedDate}\n`;
-            if (position) report += `POSISI: ${position.toUpperCase()}\n`;
-            if (department) report += `DIVISI: ${department.toUpperCase()}\n`;
-            report += `NAMA: ${employeeName}\n\n`;
-            report += `───────────────────────────────────────────────\n`;
-            report += `                AKTIVITAS HARIAN\n`;
-            report += `───────────────────────────────────────────────\n\n`;
+            let report = `LAPORAN HARIAN WEB DEV\n\n`;
+report += `TANGGAL: ${formattedDate}\n`;
+if (position) report += `POSISI: ${position.toUpperCase()}\n`;
+if (department) report += `DIVISI: ${department.toUpperCase()}\n`;
+report += `NAMA: ${employeeName}\n\n`;
+report += `AKTIVITAS HARIAN\n\n`;
 
-            const filteredActivities = activities.filter(act => act.description.trim());
-            filteredActivities.forEach((activity, index) => {
-                report += `${index + 1}. `;
-                if (activity.time) report += `[${activity.time}]\n   `;
-                report += `${activity.description}\n\n`;
-            });
+const filteredActivities = activities.filter(act => act.description.trim());
+filteredActivities.forEach((activity, index) => {
+    report += `${index + 1}. `;
+    if (activity.time) report += `[${activity.time}] `;
+    report += `${activity.description}\n\n`;
+});
 
-            if (notes) {
-                report += `───────────────────────────────────────────────\n`;
-                report += `CATATAN:\n${notes}\n\n`;
-            }
+if (notes) {
+    report += `CATATAN:\n${notes}\n\n`;
+}
 
-            report += `───────────────────────────────────────────────\n`;
-            report += `Dibuat pada: ${new Date().toLocaleString('id-ID', { 
-                day: '2-digit', 
-                month: 'long', 
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            })}\n`;
-            report += `═══════════════════════════════════════════════\n`;
+report += `Dibuat pada: ${new Date().toLocaleString('id-ID', { 
+    day: '2-digit', 
+    month: 'long', 
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+})}\n`;
 
-            currentReportText = report;
-            document.getElementById('reportContent').textContent = report;
-            document.getElementById('reportResult').classList.remove('hidden');
-            document.getElementById('reportResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
+currentReportText = report;
+document.getElementById('reportContent').textContent = report;
+document.getElementById('reportResult').classList.remove('hidden');
+document.getElementById('reportResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
         function copyToClipboard() {
             navigator.clipboard.writeText(currentReportText).then(() => {
@@ -654,5 +646,6 @@ service cloud.firestore {
     </script>
 </body>
 </html>
+
 
 
