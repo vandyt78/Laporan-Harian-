@@ -146,7 +146,6 @@
         let currentReportText = '';
         let isFirebaseMode = true;
 
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBsqkxwL1lLlXtDj2r4oxdj5cwd1bhgsRI",
             authDomain: "app-laporan-harian.firebaseapp.com",
@@ -351,6 +350,22 @@
             renderActivities();
         }
 
+        function moveActivityUp(id) {
+            const index = activities.findIndex(a => a.id === id);
+            if (index > 0) {
+                [activities[index - 1], activities[index]] = [activities[index], activities[index - 1]];
+                renderActivities();
+            }
+        }
+
+        function moveActivityDown(id) {
+            const index = activities.findIndex(a => a.id === id);
+            if (index < activities.length - 1) {
+                [activities[index], activities[index + 1]] = [activities[index + 1], activities[index]];
+                renderActivities();
+            }
+        }
+
         function updateActivity(id, field, value) {
             const activity = activities.find(a => a.id === id);
             if (activity) activity[field] = value;
@@ -360,6 +375,8 @@
             const container = document.getElementById('activitiesContainer');
             container.innerHTML = activities.map(activity => `
                 <div class="flex gap-2 items-start bg-slate-700/50 p-2 rounded-lg border border-slate-600">
+                    <button onclick="moveActivityUp(${activity.id})" class="p-1.5 text-blue-400 hover:bg-blue-900/30 rounded text-sm" title="Geser ke atas">⬆️</button>
+                    <button onclick="moveActivityDown(${activity.id})" class="p-1.5 text-blue-400 hover:bg-blue-900/30 rounded text-sm" title="Geser ke bawah">⬇️</button>
                     <input type="text" value="${activity.time}" onchange="updateActivity(${activity.id}, 'time', this.value)" placeholder="08.00 - 10.00" class="w-28 px-2 py-1.5 text-sm bg-slate-600 border border-slate-500 text-white placeholder-slate-400 rounded focus:ring-2 focus:ring-blue-500">
                     <input type="text" value="${activity.description}" onchange="updateActivity(${activity.id}, 'description', this.value)" placeholder="Deskripsi..." class="flex-1 px-2 py-1.5 text-sm bg-slate-600 border border-slate-500 text-white placeholder-slate-400 rounded focus:ring-2 focus:ring-blue-500">
                     <button onclick="removeActivity(${activity.id})" class="p-1.5 text-red-400 hover:bg-red-900/30 rounded text-sm">🗑️</button>
@@ -455,7 +472,6 @@
             document.getElementById('reportResult').classList.add('hidden');
         }
 
-        // Swipe functionality
         let touchStartX = 0;
         let touchEndX = 0;
         
@@ -466,14 +482,12 @@
             if (Math.abs(diff) > swipeThreshold) {
                 const formContainer = document.getElementById('formContainer');
                 if (diff > 0) {
-                    // Swipe right
                     formContainer.style.transform = 'translateX(10px)';
                     formContainer.style.transition = 'transform 0.3s ease';
                     setTimeout(() => {
                         formContainer.style.transform = 'translateX(0)';
                     }, 300);
                 } else {
-                    // Swipe left
                     formContainer.style.transform = 'translateX(-10px)';
                     formContainer.style.transition = 'transform 0.3s ease';
                     setTimeout(() => {
@@ -483,7 +497,6 @@
             }
         }
 
-        // Initialize Firebase on page load
         window.addEventListener('DOMContentLoaded', () => {
             try {
                 firebase.initializeApp(firebaseConfig);
@@ -498,7 +511,6 @@
                 initApp();
             }
             
-            // Add swipe listeners
             const formContainer = document.getElementById('formContainer');
             formContainer.addEventListener('touchstart', (e) => {
                 touchStartX = e.changedTouches[0].screenX;
