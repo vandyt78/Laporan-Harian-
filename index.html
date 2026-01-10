@@ -3,183 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Harian IT</title>
+    <title>Laporan Harian + Firebase</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-4">
     
-    <!-- Configuration Instructions -->
-    <div id="configModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-4xl w-full mx-4 max-h-screen overflow-y-auto">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-gray-800">📚 Panduan Setup Firebase</h2>
-                <button onclick="closeConfigModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
-            </div>
-
-            <div class="space-y-6">
-                <!-- Step 1 -->
-                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border-2 border-blue-200">
-                    <h3 class="text-xl font-bold text-blue-800 mb-3">🔷 Langkah 1: Buat Project Firebase</h3>
-                    <ol class="list-decimal list-inside space-y-2 text-sm text-gray-700">
-                        <li>Buka <a href="https://console.firebase.google.com" target="_blank" class="text-blue-600 hover:underline font-semibold">Firebase Console</a></li>
-                        <li>Klik "Add Project" atau "Tambah Project"</li>
-                        <li>Beri nama project Anda (contoh: "laporan-harian-it")</li>
-                        <li>Aktifkan Google Analytics (opsional)</li>
-                        <li>Klik "Create Project"</li>
-                    </ol>
-                </div>
-
-                <!-- Step 2 -->
-                <div class="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-lg border-2 border-purple-200">
-                    <h3 class="text-xl font-bold text-purple-800 mb-3">🔷 Langkah 2: Daftarkan Web App</h3>
-                    <ol class="list-decimal list-inside space-y-2 text-sm text-gray-700">
-                        <li>Di Firebase Console, pilih project Anda</li>
-                        <li>Klik icon "Web" (&lt;/&gt;) di halaman utama</li>
-                        <li>Beri nickname untuk app (contoh: "Laporan Harian Web")</li>
-                        <li>Klik "Register app"</li>
-                        <li><strong>SALIN konfigurasi Firebase</strong> yang muncul</li>
-                    </ol>
-                    <div class="mt-3 bg-white p-3 rounded border border-purple-300">
-                        <code class="text-xs text-gray-800">
-const firebaseConfig = {<br>
-&nbsp;&nbsp;apiKey: "AIza...",<br>
-&nbsp;&nbsp;authDomain: "...",<br>
-&nbsp;&nbsp;projectId: "...",<br>
-&nbsp;&nbsp;...<br>
-};
-                        </code>
-                    </div>
-                </div>
-
-                <!-- Step 3 -->
-                <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-lg border-2 border-green-200">
-                    <h3 class="text-xl font-bold text-green-800 mb-3">🔷 Langkah 3: Aktifkan Firestore Database</h3>
-                    <ol class="list-decimal list-inside space-y-2 text-sm text-gray-700">
-                        <li>Di sidebar, pilih "Build" → "Firestore Database"</li>
-                        <li>Klik "Create Database"</li>
-                        <li>Pilih lokasi server (pilih asia-southeast1 untuk Indonesia)</li>
-                        <li>Pilih "Start in <strong>test mode</strong>" untuk development</li>
-                        <li>Klik "Enable"</li>
-                    </ol>
-                    <div class="mt-3 bg-yellow-50 border-2 border-yellow-300 rounded p-3">
-                        <p class="text-xs text-yellow-800">⚠️ <strong>Test mode</strong> memungkinkan akses tanpa autentikasi. Untuk production, gunakan security rules!</p>
-                    </div>
-                </div>
-
-                <!-- Step 4 -->
-                <div class="bg-gradient-to-r from-amber-50 to-orange-50 p-6 rounded-lg border-2 border-amber-200">
-                    <h3 class="text-xl font-bold text-amber-800 mb-3">🔷 Langkah 4: Update Konfigurasi di Kode</h3>
-                    <ol class="list-decimal list-inside space-y-2 text-sm text-gray-700">
-                        <li>Buka file HTML laporan ini di text editor</li>
-                        <li>Cari bagian <code class="bg-white px-2 py-1 rounded">const firebaseConfig = {</code></li>
-                        <li>Ganti nilai-nilai berikut dengan konfigurasi Anda:</li>
-                    </ol>
-                    <div class="mt-3 bg-white p-3 rounded border border-amber-300 space-y-1 text-xs">
-                        <div><strong>apiKey:</strong> "YOUR_API_KEY_HERE" → Ganti dengan API Key Anda</div>
-                        <div><strong>authDomain:</strong> "your-project-id.firebaseapp.com" → Ganti dengan Auth Domain Anda</div>
-                        <div><strong>projectId:</strong> "your-project-id" → Ganti dengan Project ID Anda</div>
-                        <div><strong>storageBucket:</strong> "your-project-id.appspot.com" → Ganti dengan Storage Bucket Anda</div>
-                        <div><strong>messagingSenderId:</strong> "YOUR_SENDER_ID" → Ganti dengan Sender ID Anda</div>
-                        <div><strong>appId:</strong> "YOUR_APP_ID" → Ganti dengan App ID Anda</div>
-                    </div>
-                </div>
-
-                <!-- Security Rules -->
-                <div class="bg-gradient-to-r from-red-50 to-pink-50 p-6 rounded-lg border-2 border-red-200">
-                    <h3 class="text-xl font-bold text-red-800 mb-3">🔒 Firestore Security Rules (Production)</h3>
-                    <p class="text-sm text-gray-700 mb-3">Untuk production, gunakan rules ini di Firestore → Rules:</p>
-                    <div class="bg-white p-3 rounded border border-red-300">
-                        <pre class="text-xs text-gray-800">rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /dailyReports/{report} {
-      allow read: if true;
-      allow create: if true;
-      allow update, delete: if request.auth != null;
-    }
-  }
-}</pre>
-                    </div>
-                </div>
-
-                <!-- Quick Start Button -->
-                <div class="text-center pt-4">
-                    <button onclick="closeConfigModal()" class="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-purple-700 transition shadow-lg">
-                        ✅ Mengerti, Tutup Panduan
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Loading Screen -->
-    <div id="loadingScreen" class="fixed inset-0 bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center z-50">
-        <div class="text-center">
-            <div class="mb-4">
-                <div class="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto"></div>
-            </div>
-            <h2 class="text-2xl font-bold text-white mb-2">Menghubungkan ke Firebase...</h2>
-            <p class="text-indigo-100">Mohon tunggu sebentar</p>
-        </div>
-    </div>
-
-    <div id="mainApp" class="hidden">
+    <div id="mainApp">
         <div class="max-w-7xl mx-auto">
             <!-- Header -->
             <div class="text-center mb-8">
                 <div class="flex items-center justify-center gap-3 mb-3">
-                    <svg class="w-10 h-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-10 h-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
-                    <h1 class="text-4xl font-bold text-gray-800">Laporan Harian IT</h1>
+                    <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">Laporan Harian + Firebase</h1>
                 </div>
-                <div id="connectionStatus" class="inline-block px-4 py-2 rounded-full text-sm font-medium bg-green-100 text-green-700">
-                    🟢 Connected to Firebase
-                </div>
-                <button onclick="showConfigModal()" class="ml-3 px-3 py-1 text-xs bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
-                    📚 Panduan Setup
-                </button>
+                <div id="connectionStatus" class="inline-block px-4 py-2 rounded-full text-sm font-medium"></div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Main Form -->
                 <div class="lg:col-span-2">
-                    <div class="bg-white rounded-2xl shadow-xl p-8 mb-6">
+                    <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-2xl p-8 mb-6 border border-blue-500/20" id="formContainer">
                         <div class="flex justify-between gap-2 mb-6 flex-wrap">
                             <div class="flex gap-2">
-                                <button onclick="generateRandom()" class="px-4 py-2 text-sm bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition">
+                                <button onclick="generateRandom()" class="px-4 py-2 text-sm bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 transition shadow-lg shadow-blue-500/20">
                                     🎲 Random
                                 </button>
-                                <button onclick="loadExample()" class="px-4 py-2 text-sm bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition">
+                                <button onclick="loadExample()" class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-lg shadow-blue-500/20">
                                     📝 Contoh
                                 </button>
                             </div>
-                            <button onclick="clearForm()" class="px-4 py-2 text-sm bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">
+                            <button onclick="clearForm()" class="px-4 py-2 text-sm bg-slate-700 text-blue-300 rounded-lg hover:bg-slate-600 transition">
                                 🗑️ Reset
                             </button>
                         </div>
 
                         <!-- Info Dasar -->
                         <div class="mb-6">
-                            <h2 class="text-xl font-semibold text-gray-800 mb-4">👤 Informasi Dasar</h2>
+                            <h2 class="text-xl font-semibold text-blue-300 mb-4">👤 Informasi Dasar</h2>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">📅 Tanggal</label>
-                                    <input type="date" id="reportDate" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                    <label class="block text-sm font-medium text-blue-300 mb-2">📅 Tanggal</label>
+                                    <input type="date" id="reportDate" class="w-full px-4 py-2 bg-slate-700 border-2 border-slate-600 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">👤 Nama</label>
-                                    <input type="text" id="employeeName" placeholder="Nama Anda" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                    <label class="block text-sm font-medium text-blue-300 mb-2">👤 Nama</label>
+                                    <input type="text" id="employeeName" placeholder="Nama Anda" class="w-full px-4 py-2 bg-slate-700 border-2 border-slate-600 text-white placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">💼 Posisi</label>
-                                    <input type="text" id="position" placeholder="WEB DEVELOPER" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                    <label class="block text-sm font-medium text-blue-300 mb-2">💼 Posisi</label>
+                                    <input type="text" id="position" placeholder="WEB DEVELOPER" class="w-full px-4 py-2 bg-slate-700 border-2 border-slate-600 text-white placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">🏢 Divisi</label>
-                                    <input type="text" id="department" placeholder="IT, MARKETING" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                    <label class="block text-sm font-medium text-blue-300 mb-2">🏢 Divisi</label>
+                                    <input type="text" id="department" placeholder="IT, MARKETING" class="w-full px-4 py-2 bg-slate-700 border-2 border-slate-600 text-white placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                 </div>
                             </div>
                         </div>
@@ -187,8 +67,8 @@ service cloud.firestore {
                         <!-- Aktivitas -->
                         <div class="mb-6">
                             <div class="flex justify-between items-center mb-4">
-                                <h2 class="text-xl font-semibold text-gray-800">⏰ Aktivitas</h2>
-                                <button onclick="addActivity()" class="flex items-center gap-2 px-3 py-1.5 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition">
+                                <h2 class="text-xl font-semibold text-blue-300">⏰ Aktivitas</h2>
+                                <button onclick="addActivity()" class="flex items-center gap-2 px-3 py-1.5 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition shadow-lg shadow-green-500/20">
                                     ➕ Tambah
                                 </button>
                             </div>
@@ -197,58 +77,58 @@ service cloud.firestore {
 
                         <!-- Catatan -->
                         <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">📌 Catatan</label>
-                            <textarea id="notes" placeholder="Catatan tambahan..." rows="3" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 resize-none"></textarea>
+                            <label class="block text-sm font-medium text-blue-300 mb-2">📌 Catatan</label>
+                            <textarea id="notes" placeholder="Catatan tambahan..." rows="3" class="w-full px-4 py-2 bg-slate-700 border-2 border-slate-600 text-white placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"></textarea>
                         </div>
 
                         <!-- Buttons -->
                         <div class="flex gap-2">
-                            <button onclick="saveReport()" class="flex-1 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-lg hover:from-green-700 hover:to-emerald-700 transition shadow-lg">
-                                💾 Simpan ke Firebase
+                            <button onclick="saveReport()" class="flex-1 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-lg hover:from-green-700 hover:to-emerald-700 transition shadow-lg shadow-green-500/30">
+                                💾 Simpan ke Database
                             </button>
-                            <button onclick="generateReport()" class="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-purple-700 transition shadow-lg">
-                                ✨ Generate Laporan
+                            <button onclick="generateReport()" class="flex-1 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-cyan-700 transition shadow-lg shadow-blue-500/30">
+                                ✨ Generate
                             </button>
                         </div>
                     </div>
 
                     <!-- Hasil Laporan -->
-                    <div id="reportResult" class="bg-white rounded-2xl shadow-xl p-8 hidden">
+                    <div id="reportResult" class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-2xl p-8 hidden border border-blue-500/20">
                         <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-xl font-semibold text-gray-800">📄 Hasil Laporan</h2>
+                            <h2 class="text-xl font-semibold text-blue-300">📄 Hasil Laporan</h2>
                             <div class="flex gap-2">
-                                <button onclick="copyToClipboard()" class="px-3 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
+                                <button onclick="copyToClipboard()" class="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-lg shadow-blue-500/20">
                                     📋 Salin
                                 </button>
-                                <button onclick="downloadReport()" class="px-3 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+                                <button onclick="downloadReport()" class="px-3 py-2 text-sm bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition shadow-lg shadow-cyan-500/20">
                                     💾 Download
                                 </button>
                             </div>
                         </div>
-                        <div class="bg-gray-50 p-4 rounded-lg border-2 border-gray-200">
-                            <pre id="reportContent" class="text-sm whitespace-pre-wrap font-mono overflow-x-auto"></pre>
+                        <div class="bg-slate-700/50 p-4 rounded-lg border-2 border-slate-600">
+                            <pre id="reportContent" class="text-sm whitespace-pre-wrap font-mono overflow-x-auto text-blue-100"></pre>
                         </div>
                     </div>
                 </div>
 
                 <!-- Database Sidebar -->
                 <div class="lg:col-span-1">
-                    <div class="bg-white rounded-2xl shadow-xl p-6 sticky top-4">
+                    <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-2xl p-6 sticky top-4 border border-blue-500/20">
                         <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-xl font-semibold text-gray-800">🗄️ Database</h2>
-                            <button onclick="refreshReports()" class="px-3 py-1.5 text-xs bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                            <h2 class="text-xl font-semibold text-blue-300">🗄️ Database</h2>
+                            <button onclick="refreshReports()" class="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-lg shadow-blue-500/20">
                                 🔄 Refresh
                             </button>
                         </div>
                         
                         <div class="mb-4">
-                            <input type="text" id="searchInput" placeholder="🔍 Cari nama, posisi, tanggal..." class="w-full px-3 py-2 text-sm border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500" onkeyup="renderReports()">
+                            <input type="text" id="searchInput" placeholder="🔍 Cari..." class="w-full px-3 py-2 text-sm bg-slate-700 border-2 border-slate-600 text-white placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" onkeyup="renderReports()">
                         </div>
 
-                        <div class="mb-4 p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border-2 border-indigo-200">
+                        <div class="mb-4 p-3 bg-gradient-to-r from-blue-900/50 to-cyan-900/50 rounded-lg border-2 border-blue-500/30">
                             <div class="text-center">
-                                <div class="text-2xl font-bold text-indigo-700" id="totalReports">0</div>
-                                <div class="text-xs text-gray-600">Total Laporan Tersimpan</div>
+                                <div class="text-2xl font-bold text-blue-400" id="totalReports">0</div>
+                                <div class="text-xs text-blue-300">Total Laporan</div>
                             </div>
                         </div>
 
@@ -264,84 +144,35 @@ service cloud.firestore {
         let activities = [];
         let reports = [];
         let currentReportText = '';
+        let isFirebaseMode = true;
 
-        // Firebase Configuration - Ganti dengan konfigurasi Anda
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBsqkxwL1lLlXtDj2r4oxdj5cwd1bhgsRI",
             authDomain: "app-laporan-harian.firebaseapp.com",
             projectId: "app-laporan-harian",
             storageBucket: "app-laporan-harian.firebasestorage.app",
             messagingSenderId: "467547738950",
-            appId: "1:467547738950:web:c8626e44854b396d92cb47"
+            appId: "1:467547738950:web:c8626e44854b396d92cb47",
+            measurementId: "G-7YYQYDCBK5"
         };
-
-        function showConfigModal() {
-            document.getElementById('configModal').classList.remove('hidden');
-        }
-
-        function closeConfigModal() {
-            document.getElementById('configModal').classList.add('hidden');
-        }
 
         const randomData = {
-            names: ['Budi Santoso', 'Siti Rahma', 'Andi Wijaya', 'Dewi Lestari', 'Rudi Hartono', 'Nina Permata', 'Agus Setiawan', 'Putri Wulandari'],
-            positions: ['WEB DEVELOPER', 'FRONTEND DEVELOPER', 'BACKEND DEVELOPER', 'UI/UX DESIGNER', 'PROJECT MANAGER', 'QA ENGINEER', 'DEVOPS ENGINEER', 'SYSTEM ANALYST'],
-            departments: ['TECH', 'IT', 'ENGINEERING', 'DIGITAL', 'PRODUCT', 'DEVELOPMENT'],
-            tasks: [
-                'Briefing dan Doa Bersama All Team',
-                'Meeting dengan klien',
-                'Develop fitur login system',
-                'Bug fixing di module payment',
-                'Code review pull request',
-                'Testing fitur checkout',
-                'Deploy ke production server',
-                'Update dokumentasi API',
-                'Istirahat',
-                'Sprint planning meeting',
-                'Database optimization',
-                'Membuat landing page',
-                'Integrasi payment gateway',
-                'Setup CI/CD pipeline',
-                'Security audit'
-            ],
-            times: ['08.00 - 09.00', '09.00 - 10.30', '10.30 - 12.00', '13.00 - 15.00', '15.00 - 17.00', '11.30 - 12.30']
+            names: ['Budi Santoso', 'Siti Rahma', 'Andi Wijaya', 'Dewi Lestari', 'Rudi Hartono', 'Nina Permata'],
+            positions: ['WEB DEVELOPER', 'FRONTEND DEVELOPER', 'BACKEND DEVELOPER', 'UI/UX DESIGNER', 'PROJECT MANAGER', 'QA ENGINEER'],
+            departments: ['TECH', 'IT', 'ENGINEERING', 'DIGITAL', 'PRODUCT'],
+            tasks: ['Briefing dan Doa Bersama All Team', 'Meeting dengan klien', 'Develop fitur baru', 'Bug fixing', 'Code review', 'Testing', 'Deploy ke server', 'Update dokumentasi', 'Istirahat', 'Sprint planning'],
+            times: ['08.00 - 09.00', '09.00 - 10.30', '10.30 - 12.00', '13.00 - 15.00', '11.30 - 12.30']
         };
 
-        // Initialize Firebase automatically
-        async function initializeFirebase() {
-            try {
-                firebase.initializeApp(firebaseConfig);
-                db = firebase.firestore();
-                
-                // Test connection
-                await db.collection('dailyReports').limit(1).get();
-                
-                document.getElementById('loadingScreen').classList.add('hidden');
-                document.getElementById('mainApp').classList.remove('hidden');
-                
-                initApp();
-                loadReportsFromFirebase();
-            } catch (error) {
-                console.error('Firebase Error:', error);
-                document.getElementById('loadingScreen').innerHTML = `
-                    <div class="text-center max-w-lg">
-                        <div class="text-6xl mb-4">❌</div>
-                        <h2 class="text-2xl font-bold text-white mb-2">Gagal Terhubung ke Firebase</h2>
-                        <p class="text-indigo-100 mb-4">${error.message}</p>
-                        <div class="bg-white bg-opacity-20 rounded-lg p-4 text-left text-sm text-white mb-4">
-                            <p class="font-semibold mb-2">Kemungkinan penyebab:</p>
-                            <ul class="list-disc list-inside space-y-1">
-                                <li>Konfigurasi Firebase belum diisi dengan benar</li>
-                                <li>Firestore Database belum diaktifkan</li>
-                                <li>Project ID atau API Key salah</li>
-                                <li>Koneksi internet bermasalah</li>
-                            </ul>
-                        </div>
-                        <button onclick="showConfigModal()" class="px-6 py-3 bg-white text-indigo-600 font-semibold rounded-lg hover:bg-indigo-50 transition">
-                            📚 Lihat Panduan Setup
-                        </button>
-                    </div>
-                `;
+        function updateConnectionStatus(connected) {
+            const status = document.getElementById('connectionStatus');
+            if (connected) {
+                status.className = 'inline-block px-4 py-2 rounded-full text-sm font-medium bg-green-900/50 text-green-300 border border-green-500/30';
+                status.textContent = '🟢 Connected to Firebase';
+            } else {
+                status.className = 'inline-block px-4 py-2 rounded-full text-sm font-medium bg-yellow-900/50 text-yellow-300 border border-yellow-500/30';
+                status.textContent = '🟡 Demo Mode (LocalStorage)';
             }
         }
 
@@ -351,6 +182,7 @@ service cloud.firestore {
         }
 
         function loadReportsFromFirebase() {
+            if (!isFirebaseMode) return;
             db.collection('dailyReports').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
                 reports = [];
                 snapshot.forEach((doc) => {
@@ -358,8 +190,14 @@ service cloud.firestore {
                 });
                 renderReports();
             }, (error) => {
-                console.error('Error loading reports:', error);
+                console.error('Error:', error);
             });
+        }
+
+        function loadReportsFromLocalStorage() {
+            const stored = localStorage.getItem('dailyReports');
+            if (stored) reports = JSON.parse(stored);
+            renderReports();
         }
 
         function renderReports() {
@@ -367,30 +205,27 @@ service cloud.firestore {
             const filtered = reports.filter(r => 
                 (r.name || '').toLowerCase().includes(searchTerm) ||
                 (r.position || '').toLowerCase().includes(searchTerm) ||
-                (r.date || '').includes(searchTerm) ||
-                (r.department || '').toLowerCase().includes(searchTerm)
+                (r.date || '').includes(searchTerm)
             );
 
             document.getElementById('totalReports').textContent = reports.length;
             const list = document.getElementById('reportsList');
-            
             if (filtered.length === 0) {
-                list.innerHTML = '<div class="text-center text-gray-400 py-8 text-sm">📭 Belum ada laporan tersimpan</div>';
+                list.innerHTML = '<div class="text-center text-slate-400 py-8">Belum ada laporan</div>';
                 return;
             }
 
             list.innerHTML = filtered.map((report) => `
-                <div class="bg-gradient-to-r from-gray-50 to-blue-50 p-3 rounded-lg border-2 border-gray-200 hover:border-indigo-400 transition cursor-pointer group" onclick="loadReport('${report.id}')">
+                <div class="bg-gradient-to-r from-slate-700 to-slate-800 p-3 rounded-lg border-2 border-slate-600 hover:border-blue-500 transition cursor-pointer shadow-lg" onclick="loadReport('${report.id}')">
                     <div class="flex justify-between items-start mb-1">
                         <div class="flex-1">
-                            <div class="font-semibold text-gray-800 text-sm">${report.name}</div>
-                            <div class="text-xs text-gray-600">${report.position}</div>
-                            ${report.department ? `<div class="text-xs text-purple-600 mt-0.5">🏢 ${report.department}</div>` : ''}
+                            <div class="font-semibold text-blue-300 text-sm">${report.name}</div>
+                            <div class="text-xs text-slate-400">${report.position}</div>
                         </div>
-                        <button onclick="event.stopPropagation(); deleteReport('${report.id}')" class="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 text-sm transition-opacity">🗑️</button>
+                        <button onclick="event.stopPropagation(); deleteReport('${report.id}')" class="text-red-400 hover:text-red-300 text-xs">🗑️</button>
                     </div>
-                    <div class="text-xs text-gray-500">📅 ${report.date}</div>
-                    <div class="text-xs text-indigo-600 mt-1">${report.activities ? report.activities.length : 0} aktivitas</div>
+                    <div class="text-xs text-slate-400">📅 ${report.date}</div>
+                    <div class="text-xs text-blue-400 mt-1">${report.activities ? report.activities.length : 0} aktivitas</div>
                 </div>
             `).join('');
         }
@@ -398,58 +233,49 @@ service cloud.firestore {
         function loadReport(reportId) {
             const report = reports.find(r => r.id === reportId);
             if (!report) return;
-            
             document.getElementById('reportDate').value = report.dateRaw;
             document.getElementById('employeeName').value = report.name;
             document.getElementById('position').value = report.position;
-            document.getElementById('department').value = report.department || '';
+            document.getElementById('department').value = report.department;
             document.getElementById('notes').value = report.notes || '';
-            
             activities = (report.activities || []).map((act, i) => ({
                 id: Date.now() + i,
                 time: act.time || '',
                 description: act.description || ''
             }));
-            
             renderActivities();
             generateReport();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         async function deleteReport(reportId) {
-            if (!confirm('⚠️ Apakah Anda yakin ingin menghapus laporan ini?\n\nTindakan ini tidak dapat dibatalkan!')) return;
-            
-            try {
-                await db.collection('dailyReports').doc(reportId).delete();
-                
-                // Show success notification
-                const notification = document.createElement('div');
-                notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-pulse';
-                notification.textContent = '✅ Laporan berhasil dihapus!';
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 3000);
-            } catch (error) {
-                console.error('Error deleting report:', error);
-                alert('❌ Gagal menghapus laporan: ' + error.message);
+            if (!confirm('Hapus laporan ini?')) return;
+            if (isFirebaseMode) {
+                try {
+                    await db.collection('dailyReports').doc(reportId).delete();
+                    alert('✅ Laporan berhasil dihapus!');
+                } catch (error) {
+                    alert('❌ Error: ' + error.message);
+                }
+            } else {
+                reports = reports.filter(r => r.id !== reportId);
+                localStorage.setItem('dailyReports', JSON.stringify(reports));
+                renderReports();
             }
         }
 
         function refreshReports() {
-            loadReportsFromFirebase();
-            
-            const notification = document.createElement('div');
-            notification.className = 'fixed top-4 right-4 bg-blue-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
-            notification.textContent = '🔄 Data berhasil di-refresh!';
-            document.body.appendChild(notification);
-            setTimeout(() => notification.remove(), 2000);
+            if (isFirebaseMode) loadReportsFromFirebase();
+            else loadReportsFromLocalStorage();
+            alert('🔄 Data berhasil di-refresh!');
         }
 
         async function saveReport() {
             const reportDate = document.getElementById('reportDate').value;
-            const employeeName = document.getElementById('employeeName').value.trim();
-            const position = document.getElementById('position').value.trim();
-            const department = document.getElementById('department').value.trim();
-            const notes = document.getElementById('notes').value.trim();
+            const employeeName = document.getElementById('employeeName').value;
+            const position = document.getElementById('position').value;
+            const department = document.getElementById('department').value;
+            const notes = document.getElementById('notes').value;
 
             if (!employeeName || !position) {
                 alert('❌ Mohon isi minimal Nama dan Posisi!');
@@ -476,19 +302,21 @@ service cloud.firestore {
                 createdAt: new Date().toISOString()
             };
 
-            try {
-                await db.collection('dailyReports').add(newReport);
-                
-                const notification = document.createElement('div');
-                notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-bounce';
-                notification.textContent = '✅ Laporan berhasil disimpan ke Firebase!';
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 3000);
-                
+            if (isFirebaseMode) {
+                try {
+                    await db.collection('dailyReports').add(newReport);
+                    alert('✅ Laporan berhasil disimpan ke Firebase!');
+                    generateReport();
+                } catch (error) {
+                    alert('❌ Error: ' + error.message);
+                }
+            } else {
+                newReport.id = Date.now().toString();
+                reports.unshift(newReport);
+                localStorage.setItem('dailyReports', JSON.stringify(reports));
+                renderReports();
+                alert('✅ Laporan berhasil disimpan!');
                 generateReport();
-            } catch (error) {
-                console.error('Error saving report:', error);
-                alert('❌ Gagal menyimpan laporan: ' + error.message);
             }
         }
 
@@ -510,7 +338,7 @@ service cloud.firestore {
                 });
             }
             renderActivities();
-            document.getElementById('notes').value = Math.random() > 0.5 ? 'Semua tugas selesai dengan baik. Target tercapai sesuai deadline.' : '';
+            document.getElementById('notes').value = Math.random() > 0.5 ? 'Semua tugas selesai dengan baik' : '';
         }
 
         function addActivity() {
@@ -531,10 +359,10 @@ service cloud.firestore {
         function renderActivities() {
             const container = document.getElementById('activitiesContainer');
             container.innerHTML = activities.map(activity => `
-                <div class="flex gap-2 items-start bg-gray-50 p-2 rounded-lg border border-gray-200 hover:border-indigo-300 transition">
-                    <input type="text" value="${activity.time}" onchange="updateActivity(${activity.id}, 'time', this.value)" placeholder="08.00 - 10.00" class="w-28 px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500">
-                    <input type="text" value="${activity.description}" onchange="updateActivity(${activity.id}, 'description', this.value)" placeholder="Deskripsi aktivitas..." class="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500">
-                    <button onclick="removeActivity(${activity.id})" class="p-1.5 text-red-600 hover:bg-red-50 rounded text-sm transition">🗑️</button>
+                <div class="flex gap-2 items-start bg-slate-700/50 p-2 rounded-lg border border-slate-600">
+                    <input type="text" value="${activity.time}" onchange="updateActivity(${activity.id}, 'time', this.value)" placeholder="08.00 - 10.00" class="w-28 px-2 py-1.5 text-sm bg-slate-600 border border-slate-500 text-white placeholder-slate-400 rounded focus:ring-2 focus:ring-blue-500">
+                    <input type="text" value="${activity.description}" onchange="updateActivity(${activity.id}, 'description', this.value)" placeholder="Deskripsi..." class="flex-1 px-2 py-1.5 text-sm bg-slate-600 border border-slate-500 text-white placeholder-slate-400 rounded focus:ring-2 focus:ring-blue-500">
+                    <button onclick="removeActivity(${activity.id})" class="p-1.5 text-red-400 hover:bg-red-900/30 rounded text-sm">🗑️</button>
                 </div>
             `).join('');
         }
@@ -546,66 +374,50 @@ service cloud.firestore {
             const department = document.getElementById('department').value;
             const notes = document.getElementById('notes').value;
 
-            if (!employeeName || !position) {
-                alert('❌ Mohon isi data terlebih dahulu!');
-                return;
+            const dateObj = new Date(reportDate + 'T00:00:00');
+            const dayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            
+            const dayName = dayNames[dateObj.getDay()];
+            const date = dateObj.getDate();
+            const month = monthNames[dateObj.getMonth()];
+            const year = dateObj.getFullYear();
+            const formattedDate = `${dayName}, ${date} ${month} ${year}`;
+
+            let report = `LAPORAN HARIAN ${department ? department.toUpperCase() : 'IT'}\n`;
+            report += `Tanggal: ${formattedDate}\n`;
+            report += `Nama: ${employeeName || '-'}\n`;
+            report += `Posisi: ${position || '-'}\n`;
+            report += `Divisi: ${department || '-'}\n\n`;
+            report += `AKTIVITAS HARIAN\n`;
+
+            const filteredActivities = activities.filter(act => act.description.trim());
+            filteredActivities.forEach((activity, index) => {
+                const timePrefix = activity.time ? `[${activity.time}] ` : '';
+                report += `${index + 1}. ${timePrefix}${activity.description}\n`;
+            });
+
+            if (notes) {
+                report += `\nCATATAN:\n${notes}\n`;
             }
 
-            const dateObj = new Date(reportDate + 'T00:00:00');
-            const formattedDate = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()}`;
-
-            let report = `LAPORAN HARIAN WEB DEV\n\n`;
-report += `TANGGAL: ${formattedDate}\n`;
-if (position) report += `POSISI: ${position.toUpperCase()}\n`;
-if (department) report += `DIVISI: ${department.toUpperCase()}\n`;
-report += `NAMA: ${employeeName}\n\n`;
-report += `AKTIVITAS HARIAN\n\n`;
-
-const filteredActivities = activities.filter(act => act.description.trim());
-filteredActivities.forEach((activity, index) => {
-    report += `${index + 1}. `;
-    if (activity.time) report += `[${activity.time}] `;
-    report += `${activity.description}\n\n`;
-});
-
-if (notes) {
-    report += `CATATAN:\n${notes}\n\n`;
-}
-
-report += `Dibuat pada: ${new Date().toLocaleString('id-ID', { 
-    day: '2-digit', 
-    month: 'long', 
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-})}\n`;
-
-currentReportText = report;
-document.getElementById('reportContent').textContent = report;
-document.getElementById('reportResult').classList.remove('hidden');
-document.getElementById('reportResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            currentReportText = report;
+            document.getElementById('reportContent').textContent = report;
+            document.getElementById('reportResult').classList.remove('hidden');
+        }
 
         function copyToClipboard() {
-            navigator.clipboard.writeText(currentReportText).then(() => {
-                const notification = document.createElement('div');
-                notification.className = 'fixed top-4 right-4 bg-purple-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
-                notification.textContent = '📋 Laporan berhasil disalin!';
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 2000);
-            });
+            navigator.clipboard.writeText(currentReportText).then(() => alert('✅ Laporan berhasil disalin!'));
         }
 
         function downloadReport() {
             const reportDate = document.getElementById('reportDate').value;
-            const employeeName = document.getElementById('employeeName').value;
             const dateStr = reportDate.split('-').reverse().join('');
-            const fileName = `Laporan_${employeeName.replace(/\s+/g, '_')}_${dateStr}.txt`;
-            
             const blob = new Blob([currentReportText], { type: 'text/plain;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = fileName;
+            a.download = `Laporan_Harian_${dateStr}.txt`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -613,24 +425,26 @@ document.getElementById('reportResult').scrollIntoView({ behavior: 'smooth', blo
         }
 
         function loadExample() {
-            document.getElementById('reportDate').value = '2026-01-02';
-            document.getElementById('employeeName').value = 'John Doe';
-            document.getElementById('position').value = 'WEB DEVELOPER';
-            document.getElementById('department').value = 'TECH';
+            document.getElementById('reportDate').value = '2026-01-08';
+            document.getElementById('employeeName').value = 'Yoga';
+            document.getElementById('position').value = 'Web Developer';
+            document.getElementById('department').value = 'IT';
             activities = [
                 { id: 1, time: '08.05 - 08.20', description: 'Briefing dan Doa Bersama All Team' },
-                { id: 2, time: '08.20 - 11.30', description: 'Develop fitur login dengan OAuth2' },
-                { id: 3, time: '11.30 - 12.30', description: 'Istirahat' },
-                { id: 4, time: '13.00 - 15.00', description: 'Testing dan bug fixing' },
-                { id: 5, time: '15.00 - 17.00', description: 'Code review dan dokumentasi' }
+                { id: 2, time: '08.20 - 08.55', description: 'Briefing IT' },
+                { id: 3, time: '08.55 - 11.30', description: 'Diskusi dengan Mas Nanda untuk Penanganan Website' },
+                { id: 4, time: '', description: 'Follow Up Upgrade Dedicate JH' },
+                { id: 5, time: '', description: 'Follow Up Pembayaran Upgrade Server Dedicate' },
+                { id: 6, time: '', description: 'Back Up IT Suport Kendala Lantai 2' },
+                { id: 7, time: '11.30 - 12.30', description: 'Istirahat' },
+                { id: 8, time: '12.30 - 16.00', description: 'Tambah Kategori Toples Web Futake.co.id' },
+                { id: 9, time: '', description: 'Create Halaman Toples Futake.co.id' },
+                { id: 10, time: '', description: 'Set Kategori Toples Futake.co.id' }
             ];
             renderActivities();
-            document.getElementById('notes').value = 'Semua target harian tercapai dengan baik.';
         }
 
         function clearForm() {
-            if (!confirm('🗑️ Hapus semua data di form?')) return;
-            
             document.getElementById('reportDate').valueAsDate = new Date();
             document.getElementById('employeeName').value = '';
             document.getElementById('position').value = '';
@@ -641,11 +455,60 @@ document.getElementById('reportResult').scrollIntoView({ behavior: 'smooth', blo
             document.getElementById('reportResult').classList.add('hidden');
         }
 
-        // Auto-initialize on page load
-        window.addEventListener('DOMContentLoaded', initializeFirebase);
+        // Swipe functionality
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchEndX - touchStartX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                const formContainer = document.getElementById('formContainer');
+                if (diff > 0) {
+                    // Swipe right
+                    formContainer.style.transform = 'translateX(10px)';
+                    formContainer.style.transition = 'transform 0.3s ease';
+                    setTimeout(() => {
+                        formContainer.style.transform = 'translateX(0)';
+                    }, 300);
+                } else {
+                    // Swipe left
+                    formContainer.style.transform = 'translateX(-10px)';
+                    formContainer.style.transition = 'transform 0.3s ease';
+                    setTimeout(() => {
+                        formContainer.style.transform = 'translateX(0)';
+                    }, 300);
+                }
+            }
+        }
+
+        // Initialize Firebase on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                updateConnectionStatus(true);
+                loadReportsFromFirebase();
+                initApp();
+                console.log('✅ Firebase connected successfully!');
+            } catch (error) {
+                console.error('Firebase Error:', error);
+                updateConnectionStatus(false);
+                initApp();
+            }
+            
+            // Add swipe listeners
+            const formContainer = document.getElementById('formContainer');
+            formContainer.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            });
+            
+            formContainer.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            });
+        });
     </script>
 </body>
 </html>
-
-
-
